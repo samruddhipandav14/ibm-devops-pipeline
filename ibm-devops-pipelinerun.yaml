@@ -6,6 +6,9 @@ metadata:
 spec:
   pipelineRef:
     name: ibm-devops-pipeline
+  params:
+    - name: license-server
+      value: "169.53.174.40"  
   taskRunTemplate:
     podTemplate:
       securityContext:
