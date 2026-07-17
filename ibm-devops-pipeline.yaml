@@ -133,31 +133,8 @@ spec:
               --set global.platform.smtp.startTLS=${EMAIL_SERVER_STARTTLS} \
               --set global.platform.smtp.smtps=${EMAIL_SERVER_SMTPS} \
               --set license=${ACCEPT_LICENSE} \
-              --set ibm-devopsplan-prod.persistence.ccm.storageClass=ocs-external-storagecluster-cephfs \
-              --set ibm-devopsplan-prod.persistence.ccm.data.storageClass=ocs-external-storagecluster-cephfs \
-              --set ibm-devopsplan-prod.persistence.ccm.config.storageClass=ocs-external-storagecluster-cephfs \
-              --set ibm-devopsplan-prod.persistence.ccm.share.storageClass=ocs-external-storagecluster-cephfs \
-              --set ibm-devopsplan-prod.persistence.ccm.logs.storageClass=ocs-external-storagecluster-cephfs \
-              --set ibm-devopsplan-prod.persistence.ccm.data.accessModes[0]=ReadWriteMany \
-              --set ibm-devopsplan-prod.persistence.ccm.config.accessModes[0]=ReadWriteMany \
-              --set ibm-devopsplan-prod.persistence.ccm.share.accessModes[0]=ReadWriteMany \
-              --set ibm-devopsplan-prod.persistence.ccm.logs.accessModes[0]=ReadWriteMany \
-              --set ibm-devopsplan-prod.persistence.analytics.data.accessModes[0]=ReadWriteMany \
-              --set ibm-devopsplan-prod.persistence.analytics.data.storageClass=ocs-external-storagecluster-cephfs \
-              --set ibm-devopsplan-prod.persistence.analytics.config.accessModes[0]=ReadWriteMany \
-              --set ibm-devopsplan-prod.persistence.analytics.config.storageClass=ocs-external-storagecluster-cephfs \
-              --set ibm-devopsplan-prod.persistence.analytics.share.accessModes[0]=ReadWriteMany \
-              --set ibm-devopsplan-prod.persistence.analytics.share.storageClass=ocs-external-storagecluster-cephfs \
-              --set ibm-devopsplan-prod.persistence.analytics.logs.accessModes[0]=ReadWriteMany \
-              --set ibm-devopsplan-prod.persistence.analytics.logs.storageClass=ocs-external-storagecluster-cephfs \
-              --set ibm-devopsplan-prod.persistence.search.data.accessModes[0]=ReadWriteMany \
-              --set ibm-devopsplan-prod.persistence.search.data.storageClass=ocs-external-storagecluster-cephfs \
-              --set ibm-devopsplan-prod.persistence.search.config.accessModes[0]=ReadWriteMany \
-              --set ibm-devopsplan-prod.persistence.search.config.storageClass=ocs-external-storagecluster-cephfs \
-              --set ibm-devopsplan-prod.persistence.search.share.accessModes[0]=ReadWriteMany \
-              --set ibm-devopsplan-prod.persistence.search.share.storageClass=ocs-external-storagecluster-cephfs \
-              --set ibm-devopsplan-prod.persistence.search.logs.accessModes[0]=ReadWriteMany \
-              --set ibm-devopsplan-prod.persistence.search.logs.storageClass=ocs-external-storagecluster-cephfs \
+              --set global.persistence.rwxStorageClass=${RWX_STORAGE_CLASS}
+              --set global.persistence.rwoStorageClass=${RWO_STORAGE_CLASS}
               "
 
               LICENSE_SERVER="$(params.license-server)"
