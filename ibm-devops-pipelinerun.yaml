@@ -10,4 +10,4 @@ spec:
     podTemplate:
       securityContext:
         runAsUser: 0
-        runAsGroup: 
+        runAsGroup: 0
