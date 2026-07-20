@@ -135,6 +135,10 @@ spec:
               --set license=${ACCEPT_LICENSE} \
               --set global.persistence.rwxStorageClass=${RWX_STORAGE_CLASS}
               --set global.persistence.rwoStorageClass=${RWO_STORAGE_CLASS}
+              --set ibm-devopsplan-prod.persistence.analytics.data.storageClass=ocs-external-storagecluster-cephfs \
+              --set ibm-devopsplan-prod.persistence.analytics.config.storageClass=ocs-external-storagecluster-cephfs \
+              --set ibm-devopsplan-prod.persistence.analytics.logs.storageClass=ocs-external-storagecluster-cephfs \
+              --set ibm-devopsplan-prod.persistence.analytics.share.storageClass=ocs-external-storagecluster-cephfs \
               "
 
               LICENSE_SERVER="$(params.license-server)"
