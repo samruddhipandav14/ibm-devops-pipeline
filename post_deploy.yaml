@@ -1,0 +1,10 @@
+---
+- hosts: localhost
+  tasks:
+    - name: Clone IBM DevOps pipeline repo
+      shell: |
+        git clone https://github.com/samruddhipandav14/ibm-devops-pipeline.git /tmp/ibm-devops-pipeline
+
+    - name: Apply Tekton pipeline
+      shell: |
+        oc apply -f /tmp/ibm-devops-pipeline/pipeline.yaml
