@@ -84,7 +84,10 @@ spec:
               MONGO_URL="mongodb://root:${MONGODB_ROOT_PASSWORD}@${MONGO_HELM_RELEASE_NAME}-mongodb:27017/admin"
               echo "MongoDB URL: ${MONGO_URL}"
               echo "MongoDB root password: ${MONGODB_ROOT_PASSWORD}"
-              oc create secret generic mongodb-url-secret --namespace $(params.namespace) --from-literal=password="${MONGO_URL}"
+              oc create secret generic mongodb-url-secret \
+              --namespace $(params.namespace) \
+              --from-literal=password="${MONGO_URL}" \
+              --dry-run=client -o yaml | oc apply -f -
     - name: deploy-ibm-ucv-helm-chart
       runAfter:
         - deploy-mongodb
