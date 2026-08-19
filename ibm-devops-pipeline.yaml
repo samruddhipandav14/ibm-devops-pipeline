@@ -121,7 +121,11 @@ spec:
 
               ACCEPT_LICENSE=true
               HELM_NAME=$(params.devops-loop-helm-name)
-
+              
+              LICENSE_SERVER="$(params.license-server)"
+              RWX_STORAGE_CLASS="$(params.file-storage-class)"
+              RWO_STORAGE_CLASS="$(params.block-storage-class)"
+              
               HELM_OPTIONS="${HELM_OPTIONS:-} \
               --set global.domain=${DOMAIN} \
               --set-literal global.passwordSeed=${PASSWORD_SEED} \
@@ -133,17 +137,13 @@ spec:
               --set global.platform.smtp.startTLS=${EMAIL_SERVER_STARTTLS} \
               --set global.platform.smtp.smtps=${EMAIL_SERVER_SMTPS} \
               --set license=${ACCEPT_LICENSE} \
-              --set global.persistence.rwxStorageClass=${RWX_STORAGE_CLASS}
-              --set global.persistence.rwoStorageClass=${RWO_STORAGE_CLASS}
+              --set global.persistence.rwxStorageClass=${RWX_STORAGE_CLASS} \
+              --set global.persistence.rwoStorageClass=${RWO_STORAGE_CLASS} \
               --set ibm-devopsplan-prod.persistence.analytics.data.storageClass=ocs-external-storagecluster-cephfs \
               --set ibm-devopsplan-prod.persistence.analytics.config.storageClass=ocs-external-storagecluster-cephfs \
               --set ibm-devopsplan-prod.persistence.analytics.logs.storageClass=ocs-external-storagecluster-cephfs \
               --set ibm-devopsplan-prod.persistence.analytics.share.storageClass=ocs-external-storagecluster-cephfs \
               "
-
-              LICENSE_SERVER="$(params.license-server)"
-              RWX_STORAGE_CLASS="$(params.file-storage-class)"
-              RWO_STORAGE_CLASS="$(params.block-storage-class)"
 
               if [ -n "${LICENSE_SERVER}" ]; then
                   HELM_OPTIONS="${HELM_OPTIONS} --set global.rationalLicenseKeyServer=@${LICENSE_SERVER}"
