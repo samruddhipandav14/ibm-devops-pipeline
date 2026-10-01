@@ -67,7 +67,7 @@ spec:
       displayName: Create Namespace For IBM DevOps
       taskSpec:
         steps:
-    - name: create-namespace
+          - name: create-namespace
           image: docker.io/knickkennedy/k8s-tools@sha256:542002707d909d25b3ed05654f77c514a507b1fc916ad3d44adb5a672adb4299
           script: |
             #!/bin/bash
