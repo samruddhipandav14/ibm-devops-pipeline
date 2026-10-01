@@ -14,7 +14,7 @@ spec:
       default: devops-loop
     - name: mongo-image-tag
       type: string
-      default: "8.0.28"
+      default: 8.0.28
     - name: mongo-image-repo
       type: string
       default: docker.io/library/mongo
@@ -26,7 +26,7 @@ spec:
       default: 20Gi
     - name: mongo-additional-install-options
       type: string
-      default: ""
+      default: ''
     - name: file-storage-class
       type: string
       default: ocs-external-storagecluster-cephfs
@@ -37,10 +37,10 @@ spec:
       type: string
     - name: loop-version
       type: string
-      default: "3.0.0"
+      default: 3.0.0
     - name: additional-helm-options
       type: string
-      default: ""
+      default: ''
     - name: devops-loop-helm-name
       type: string
       default: devops-loop
@@ -68,16 +68,16 @@ spec:
       taskSpec:
         steps:
           - name: create-namespace
-          image: docker.io/knickkennedy/k8s-tools@sha256:542002707d909d25b3ed05654f77c514a507b1fc916ad3d44adb5a672adb4299
-          script: |
-            #!/bin/bash
-            set -euo pipefail
-            oc create namespace "$(params.namespace)" --dry-run=client -o yaml | oc apply -f -
-     - name: deploy-mongodb
-       runAfter:
+            image: docker.io/knickkennedy/k8s-tools@sha256:542002707d909d25b3ed05654f77c514a507b1fc916ad3d44adb5a672adb4299
+            script: |
+              #!/bin/bash
+              set -euo pipefail
+              oc create namespace "$(params.namespace)" --dry-run=client -o yaml | oc apply -f -
+    - name: deploy-mongodb
+      runAfter:
         - create-namespace-for-ibm-devops
-        taskSpec:
-          steps:
+      taskSpec:
+        steps:
           - name: deploy-mongo
             image: docker.io/knickkennedy/k8s-tools@sha256:542002707d909d25b3ed05654f77c514a507b1fc916ad3d44adb5a672adb4299
             script: |
@@ -85,31 +85,31 @@ spec:
               set -euo pipefail
               NAMESPACE="$(params.namespace)"
               MONGO_NAMESPACE="$(params.mongodb-namespace)"
+              MONGO_HELM_RELEASE_NAME="$(params.mongo-helm-release-name)"
               MONGO_IMAGE_TAG="$(params.mongo-image-tag)"
               MONGO_IMAGE_REPO="$(params.mongo-image-repo)"
-              MONGO_HELM_RELEASE_NAME="$(params.mongo-helm-release-name)"
               MONGO_PVC_SIZE="$(params.mongo-pvc-size)"
               MONGO_INSTALL_MODE="$(params.mongo-install-mode)"
               RWO_STORAGE_CLASS="$(params.block-storage-class)"
               # Never mount an old Bitnami data volume into MongoDB 8.
               if oc get secret "${MONGO_HELM_RELEASE_NAME}-mongodb" -n "${MONGO_NAMESPACE}" >/dev/null 2>&1; then
-              if [ "$(params.mongodb-migration-confirmed)" != "true" ] || ! oc get secret mongodb-url-secret -n "${NAMESPACE}" >/dev/null 2>&1; then
-              echo "Existing Bitnami MongoDB detected. Back up and migrate to supported MongoDB 7/8, update mongodb-url-secret, then confirm migration."
-              exit 1
-            fi
-          fi
-          helm repo add ibm-helm https://raw.githubusercontent.com/IBM/charts/master/repo/ibm-helm --force-update
-          helm repo update
-          helm pull --untar ibm-helm/ibm-devops-loop --version "$(params.loop-version)"
-          source ./ibm-devops-loop/scripts/mongodb.sh
-          KUBE_CMD=oc ensure_mongodb_url_secret
+                if [ "$(params.mongodb-migration-confirmed)" != "true" ] || ! oc get secret mongodb-url-secret -n "${NAMESPACE}" >/dev/null 2>&1; then
+                  echo "Existing Bitnami MongoDB detected. Back up and migrate to supported MongoDB 7/8, update mongodb-url-secret, then confirm migration."
+                  exit 1
+                fi
+              fi
+              helm repo add ibm-helm https://raw.githubusercontent.com/IBM/charts/master/repo/ibm-helm --force-update
+              helm repo update
+              helm pull --untar ibm-helm/ibm-devops-loop --version "$(params.loop-version)"
+              source ./ibm-devops-loop/scripts/mongodb.sh
+              KUBE_CMD=oc ensure_mongodb_url_secret
     - name: deploy-ibm-ucv-helm-chart
       runAfter:
         - deploy-mongodb
       taskSpec:
         steps:
           - name: deploy-loop
-            image: "docker.io/knickkennedy/k8s-tools@sha256:542002707d909d25b3ed05654f77c514a507b1fc916ad3d44adb5a672adb4299"
+            image: docker.io/knickkennedy/k8s-tools@sha256:542002707d909d25b3ed05654f77c514a507b1fc916ad3d44adb5a672adb4299
             script: |
               #!/bin/bash
               set -euo pipefail
@@ -119,10 +119,9 @@ spec:
 
               helm pull --untar ibm-helm/ibm-devops-loop --version "$(params.loop-version)"
               ROOT_DIR=./ibm-devops-loop
-              
+
               DOMAIN=automation.$(oc get -n openshift-ingress-operator ingresscontroller default -o jsonpath='{.status.domain}')
               PASSWORD_SEED=EOGsIClq5SexCijpqTBEx5IBcBQ1FUtBAMxWF1kiAHs=
-
               EMAIL_SERVER_HOST=smtp.sendgrid.net
               EMAIL_SERVER_PORT=2525
               EMAIL_FROM_ADDRESS=IBMDevopsAutomation@outlook.com
@@ -131,13 +130,16 @@ spec:
               EMAIL_SERVER_STARTTLS=false
               EMAIL_SERVER_SMTPS=false
 
+              ADDITIONAL_HELM_OPTIONS="$(params.additional-helm-options)"
+              TLS_CERT_SECRET_NAME="$(params.tls-cert-secret-name)"
+
               ACCEPT_LICENSE=true
               HELM_NAME=$(params.devops-loop-helm-name)
-              
+
               LICENSE_SERVER="$(params.license-server)"
               RWX_STORAGE_CLASS="$(params.file-storage-class)"
               RWO_STORAGE_CLASS="$(params.block-storage-class)"
-              
+
               HELM_OPTIONS="${HELM_OPTIONS:-} \
               --set global.domain=${DOMAIN} \
               --set global.platform.smtp.sender=${EMAIL_FROM_ADDRESS} \
@@ -173,4 +175,4 @@ spec:
               fi
 
               HELM_OPTIONS="${HELM_OPTIONS} ${ADDITIONAL_HELM_OPTIONS}"
-              helm upgrade --install ${HELM_NAME} ${ROOT_DIR} --version "$(params.loop-version)" ${HELM_OPTIONS} -n $(params.namespace) -f ${ROOT_DIR}/values-openshift.yaml
+              helm upgrade --install ${HELM_NAME} ${ROOT_DIR} --version "$(params.loop-version)" ${HELM_OPTIONS} --set-literal "global.passwordSeed=${PASSWORD_SEED}" --set-literal "global.platform.smtp.password=${EMAIL_SERVER_PASSWORD}" -n $(params.namespace) -f ${ROOT_DIR}/values-openshift.yaml
