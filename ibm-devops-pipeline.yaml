@@ -62,7 +62,7 @@ spec:
     - name: appscan-external-url
       type: string
       default: ''
-    tasks:
+  tasks:
     - name: create-namespace-for-ibm-devops
       displayName: Create Namespace For IBM DevOps
       taskSpec:
